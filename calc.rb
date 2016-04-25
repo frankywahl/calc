@@ -20,7 +20,39 @@ def calculate(s)
   res
 end
 
-# run_tests = ENV.has_key? 'run_tests'
-# run_tests and require 'minitest/autorun'
+run_tests = ENV.has_key? 'run_tests'
+run_tests and require 'minitest/autorun'
 
-# calculate_examples = []
+calculate_examples = [
+  { :given => "0", :expect => 0 },
+  { :given => "1+1", :expect => 2 },
+  { :given => "1+1+1", :expect => 3 },
+  { :given => "1-1", :expect => 0 },
+  { :given => "10000000000000000 + 1", :expect => 10000000000000001 },
+  { :given => "(1 - 2) - 2", :expect => -3 },
+  { :given => "2 - (1 - 2)", :expect => 3 },
+  { :given => "(1 - (1 - 2)) - 2", :expect => 0 },
+  { :given => "(1 + 1) + (1 + 1)", :expect => 4 },
+  { :given => "(1) + (1 + 1)", :expect => 3 },
+  { :given => "(1 - 3) - (2 + 3)", :expect => -7 },
+  { :given => "(1) + (1)", :expect => 2 },
+  { :given => "((1))", :expect => 1 },
+  { :given => "(1 + (2 + (3)))", :expect => 6 },
+  { :given => "(1 + (1 - (1 + 1)))", :expect => 0 },
+  { :given => "(1 + (1 - (1 + 1)))", :expect => 0 },
+  { :given => "-1-1", :expect => -2 },
+  { :given => "-1-1-1", :expect => -3 },
+  { :given => "-1+(-1)", :expect => -2 },
+  { :given => "-1+-1", :expect => -2 },
+  { :given => "1+-1", :expect => 0 },
+  # { :given => "-1--1", :expect => 0 }, TODO: fix this later
+  # { :given => "1+1.1", :expect => 2.1 }, TODO: fix this
+]
+
+calculate_examples.each do |eg|
+  describe "#calculate" do
+    it eg.inspect do
+      assert_equal eg[:expect], calculate(eg[:given])
+    end
+  end
+end
