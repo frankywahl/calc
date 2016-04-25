@@ -22,3 +22,5 @@ end
 
 # run_tests = ENV.has_key? 'run_tests'
 # run_tests and require 'minitest/autorun'
+
+# calculate_examples = []

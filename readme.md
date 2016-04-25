@@ -1,5 +1,5 @@
 
-- hi
+- hi!
 
 - likely you've heard a little about how these sessions work from the others
 
@@ -10,8 +10,8 @@
 - specific topics we'll touch upon in this session:
 
 - design and testing
-- reduce
-- stack algorithms
+- *reduce*
+- stacks
 - pure functions
 - function arity
 - lazy evaluation
