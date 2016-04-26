@@ -23,7 +23,7 @@ def calculate(s)
 end
 
 def tokenize(str)
-  token_list, buffer = str.split("").reject{|x| x == ' '}.reduce([[], ""]) do |acc, char|
+  token_list, buffer = str.chars.reject{|x| x == ' '}.reduce([[], ""]) do |acc, char|
     tokenize_step(acc, char)
   end
 
