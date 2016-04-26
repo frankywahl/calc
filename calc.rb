@@ -22,15 +22,18 @@ def calculate(s)
   res
 end
 
+def tokenize(str)
+  token_list, buffer = str.split("").reject{|x| x == ' '}.reduce([[], ""]) do |acc, char|
+    tokenize_step(acc, char)
+  end
+
+  return token_list if buffer == ""
+  token_list << parse_token(buffer)
+end
+
 # acc, chr -> acc
 # acc: pair_of token_list and num buffer
 def tokenize_step(acc, chr)
-  # ([], "")
-  # if chr is a digit or a `.`, add to the buffer and return the acc
-  # else parse the buffer to a decimal and add the result to the
-  # token_list and parse the chr to a symbol and add that result to
-  # the token_list
-  # and reset the buffer to an empty string
   token_list, num_buffer = acc
   if NUMERIC.include?(chr)
     num_buffer += chr
@@ -52,6 +55,7 @@ def parse_token(str)
     str.to_sym
   else
     BigDecimal.new(str)
+    str.to_f
   end
 end
 
@@ -137,6 +141,14 @@ run_tests && tokenize_step_examples.each do |eg|
   describe "#tokenize_step" do
     it eg.inspect do
       assert_equal eg[:expect], tokenize_step(*eg[:given])
+    end
+  end
+end
+
+run_tests && tokenize_examples.each do |eg|
+  describe "#tokenize" do
+    it eg.inspect do
+      assert_equal eg[:expect], tokenize(eg[:given])
     end
   end
 end
