@@ -23,15 +23,15 @@ def calculate(s)
 end
 
 def tokenize(str)
-  initial_memo = [[], ""] # caller has to "know" this
-  token_list, buffer = str
+  memo = tokenize_step
+  memo = str
     .chars
     .reject(&method(:space?))
-    .reduce(initial_memo, &method(:tokenize_step))
+    .reduce(memo, &method(:tokenize_step))
 
-  # caller must also know this
-  token_list << parse_token(buffer) unless buffer.empty?
-  return token_list
+  memo = tokenize_step memo
+
+  memo.first
 end
 
 def space?(str)
@@ -40,18 +40,25 @@ end
 
 # acc, chr -> acc
 # acc: pair_of token_list and num buffer
-def tokenize_step(acc, chr)
-  token_list, num_buffer = acc
-  if NUMERIC.include?(chr)
-    num_buffer += chr
-  else
+def tokenize_step(*args)
+  if args.length == 0 # initialize memo
+    [[], ""]
+  elsif args.length == 1 # finalize memo
+    (token_list, num_buffer) = args.first
     token_list << parse_token(num_buffer) unless num_buffer.empty?
-    token_list << parse_token(chr)
-    num_buffer = ""
+    [token_list, ""]
+  else # do step
+    (token_list, num_buffer), chr = args
+    if NUMERIC.include?(chr)
+      num_buffer += chr
+    else
+      token_list << parse_token(num_buffer) unless num_buffer.empty?
+      token_list << parse_token(chr)
+      num_buffer = ""
+    end
+    [token_list, num_buffer]
   end
-  [token_list, num_buffer]
 end
-
 
 NUMERIC = (0..9).map(&:to_s) + ['.']
 OPERATORS_AND_PARENS = ["+", "-", "(", ")"]
