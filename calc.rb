@@ -180,4 +180,4 @@ end
 
 # entry point
 
-p tokenize(ARGV.first) if $PROGRAM_NAME == __FILE__
+p tokenize(ARGV.first) if not run_tests and $PROGRAM_NAME == __FILE__
