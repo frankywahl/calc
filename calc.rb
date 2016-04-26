@@ -20,6 +20,31 @@ def calculate(s)
   res
 end
 
+
+tokenize_step_examples = [
+  {given: [[[], ""], "1"], expect: [[], "1"] },
+  {given: [[[], "1"], "1"], expect: [[], "11"] },
+  {given: [[[], "1"], "+"], expect: [[1, :+], ""] },
+  {given: [[[], "1"], "-"], expect: [[1, :-], ""] },
+  {given: [[[], "1"], "."], expect: [[], "1."] },
+  {given: [[[], "1"], "."], expect: [[], "1."] },
+  {given: [[[], "1."], "5"], expect: [[],"1.5"] },
+  {given: [[[3], "1."], "5"], expect: [[3],"1.5"] },
+  {given: [[[3, :+], "1"], ")"], expect: [[3, :+, 1, :")"],""] }, # This will never happen, but ensure tokenize_step is independent of calculate
+]
+
+# separate parsing from calculations
+
+tokenize_examples = [
+  { given: "0", expect: [0] },
+  { given: "1 + 1", expect: [1, :+, 1] },
+  { given: "1 - 1", expect: [1, :-, 1] },
+  { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
+]
+
+# apply an operation
+# calculate a step of the total calculation
+
 run_tests = ENV.has_key? 'run_tests'
 run_tests and require 'minitest/autorun'
 
