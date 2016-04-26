@@ -1,5 +1,7 @@
 require 'bigdecimal'
 
+# original
+
 # str -> num
 def calculate(s)
   res, num, sign, stack = 0, 0, 1, [1]
@@ -22,16 +24,23 @@ def calculate(s)
   res
 end
 
+# helpers
+
+def reduce(coll, rblk)
+  inital_mem = rblk.call
+  penultimate_mem = coll.reduce(inital_mem, &rblk)
+  rblk.call penultimate_mem # final
+end
+
+# tokenization concern
+
 def tokenize(str)
-  memo = tokenize_step
-  memo = str
+  chrs_without_spaces = str
     .chars
     .reject(&method(:space?))
-    .reduce(memo, &method(:tokenize_step))
 
-  memo = tokenize_step memo
-
-  memo.first
+  reduce(chrs_without_spaces, method(:tokenize_step))
+    .first
 end
 
 def space?(str)
@@ -69,9 +78,10 @@ def parse_token(str)
     str.to_sym
   else
     BigDecimal.new(str)
-    str.to_f
   end
 end
+
+# tokenization tests
 
 parse_token_examples = [
   { given: "1", expect: 1 },
@@ -81,6 +91,8 @@ parse_token_examples = [
 ]
 
 tokenize_step_examples = [
+  # todo: test for arity 0
+  # todo: test for arity 1
   {given: [[[], ""], "1"], expect: [[], "1"] },
   {given: [[[], "1"], "1"], expect: [[], "11"] },
   {given: [[[], "1"], "+"], expect: [[1, :+], ""] },
