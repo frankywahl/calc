@@ -1,6 +1,6 @@
 require 'bigdecimal'
 
-# original
+# original implemenation
 
 # str -> num
 def calculate(s)
@@ -27,9 +27,9 @@ end
 # helpers
 
 def reduce(coll, rblk)
-  inital_mem = rblk.call
-  penultimate_mem = coll.reduce(inital_mem, &rblk)
-  rblk.call penultimate_mem # final
+  inital_mem = rblk.call # initialize memo
+  penultimate_mem = coll.reduce(inital_mem, &rblk) # run every step
+  rblk.call penultimate_mem # finalize memo
 end
 
 # tokenization concern
@@ -48,12 +48,12 @@ def space?(str)
 end
 
 # acc, chr -> acc
-# acc: pair_of token_list and num buffer
+# acc is a pair of token list and num buffer
 def tokenize_step(*args)
   if args.length == 0 # initialize memo
     [[], ""]
   elsif args.length == 1 # finalize memo
-    (token_list, num_buffer) = args.first
+    token_list, num_buffer = args.first
     token_list << parse_token(num_buffer) unless num_buffer.empty?
     [token_list, ""]
   else # do step
@@ -69,7 +69,7 @@ def tokenize_step(*args)
   end
 end
 
-NUMERIC = (0..9).map(&:to_s) + ['.']
+NUMERIC = (0..9).map(&:to_s) + ["."]
 OPERATORS_AND_PARENS = ["+", "-", "(", ")"]
 
 # str -> token
@@ -81,7 +81,12 @@ def parse_token(str)
   end
 end
 
-# tokenization tests
+# - tests
+
+run_tests = ENV.has_key? 'run_tests'
+run_tests and require 'minitest/autorun'
+
+# -- tests: tokenize
 
 parse_token_examples = [
   { given: "1", expect: 1 },
@@ -113,13 +118,31 @@ tokenize_examples = [
   { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
 ]
 
+run_tests && parse_token_examples.each do |eg|
+  describe "#parse_token" do
+    it eg.inspect do
+      assert_equal eg[:expect], parse_token(eg[:given])
+    end
+  end
+end
 
+run_tests && tokenize_step_examples.each do |eg|
+  describe "#tokenize_step" do
+    it eg.inspect do
+      assert_equal eg[:expect], tokenize_step(*eg[:given])
+    end
+  end
+end
 
-# apply an operation
-# calculate a step of the total calculation
+run_tests && tokenize_examples.each do |eg|
+  describe "#tokenize" do
+    it eg.inspect do
+      assert_equal eg[:expect], tokenize(eg[:given])
+    end
+  end
+end
 
-run_tests = ENV.has_key? 'run_tests'
-run_tests and require 'minitest/autorun'
+# -- tests: calculate (original implemenation)
 
 calculate_examples = [
   { :given => "0", :expect => 0 },
@@ -151,30 +174,6 @@ run_tests && calculate_examples.each do |eg|
   describe "#calculate" do
     it eg.inspect do
       assert_equal eg[:expect], calculate(eg[:given])
-    end
-  end
-end
-
-run_tests && parse_token_examples.each do |eg|
-  describe "#parse_token" do
-    it eg.inspect do
-      assert_equal eg[:expect], parse_token(eg[:given])
-    end
-  end
-end
-
-run_tests && tokenize_step_examples.each do |eg|
-  describe "#tokenize_step" do
-    it eg.inspect do
-      assert_equal eg[:expect], tokenize_step(*eg[:given])
-    end
-  end
-end
-
-run_tests && tokenize_examples.each do |eg|
-  describe "#tokenize" do
-    it eg.inspect do
-      assert_equal eg[:expect], tokenize(eg[:given])
     end
   end
 end
