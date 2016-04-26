@@ -23,12 +23,17 @@ def calculate(s)
 end
 
 def tokenize(str)
-  token_list, buffer = str.chars.reject{|x| x == ' '}.reduce([[], ""]) do |acc, char|
-    tokenize_step(acc, char)
-  end
+  token_list, buffer = str
+    .chars
+    .reject(&method(:space?))
+    .reduce([[], ""], &method(:tokenize_step))
 
   return token_list if buffer == ""
   token_list << parse_token(buffer)
+end
+
+def space?(str)
+  " " == str
 end
 
 # acc, chr -> acc
