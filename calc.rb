@@ -177,3 +177,7 @@ run_tests && calculate_examples.each do |eg|
     end
   end
 end
+
+# entry point
+
+p tokenize(ARGV.first) if $PROGRAM_NAME == __FILE__
