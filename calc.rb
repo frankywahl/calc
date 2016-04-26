@@ -23,13 +23,15 @@ def calculate(s)
 end
 
 def tokenize(str)
+  initial_memo = [[], ""] # caller has to "know" this
   token_list, buffer = str
     .chars
     .reject(&method(:space?))
-    .reduce([[], ""], &method(:tokenize_step))
+    .reduce(initial_memo, &method(:tokenize_step))
 
-  return token_list if buffer == ""
-  token_list << parse_token(buffer)
+  # caller must also know this
+  token_list << parse_token(buffer) unless buffer.empty?
+  return token_list
 end
 
 def space?(str)
