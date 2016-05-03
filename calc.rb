@@ -90,14 +90,39 @@ end
 
 # - calculation concern
 
-# TODO: use reducer!
+OPERATORS = [:+, :-].freeze
+
+def calculate_step(*args)
+  if args.empty?
+    []
+  elsif args.length == 1
+    return args.first
+  else
+    stack, token = args
+    if OPERATORS.include?(token) || token == :'('
+      stack << token
+    elsif token == :')'
+      result = stack.pop
+      stack.pop
+      calculate_step(stack, result)
+    else
+      top = stack.last
+      if OPERATORS.include?(top)
+        operator = stack.pop
+        stack << stack.pop.send(operator, token)
+      else
+        stack << token
+      end
+    end
+  end
+end
 
 # - tests
 
 # rubocop:disable all
 
 run_tests = ENV.key? 'run_tests'
-run_tests and require ' minitest/autorun'
+run_tests and require 'minitest/autorun'
 
 # -- tests: tokenize
 
@@ -148,27 +173,6 @@ calculate_step_examples = [
   { given: [[1, :+, :"(", -1], :")"], expect: [0]}
 ]
 
-OPERATORS = [:+, :-]
-
-def calculate_step(stack, token)
-  if OPERATORS.include?(token) || token == :'('
-    stack << token
-  elsif token == :')'
-    result = stack.pop
-    stack.pop
-    calculate_step(stack, result)
-  else
-    top = stack.last
-
-    if OPERATORS.include?(top)
-      operator = stack.pop
-      stack << stack.pop.send(operator, token)
-    else
-      stack << token
-    end
-  end
-end
-
 run_tests && parse_token_examples.each do |eg|
   describe "#parse_token" do
     it eg.inspect do
@@ -192,8 +196,6 @@ run_tests && tokenize_examples.each do |eg|
     end
   end
 end
-
-
 
 # -- tests: calculate (original implemenation)
 
