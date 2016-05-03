@@ -4,7 +4,7 @@ require 'bigdecimal'
 
 # rubocop:disable all
 # str -> num
-def calculate(s)
+def calculate_old(s)
   res, num, sign, stack = 0, 0, 1, [1]
   for i in (s + "+").chars
     if /\d/ =~ i
@@ -86,6 +86,12 @@ def parse_token(str)
   else
     BigDecimal.new(str)
   end
+end
+
+def calculate(str)
+  tokenized = tokenize(str)
+  memo = reduce(tokenized, method(:calculate_step))
+  memo.first
 end
 
 # - calculation concern
@@ -216,11 +222,11 @@ calculate_examples = [
   { :given => "(1 + (2 + (3)))", :expect => 6 },
   { :given => "(1 + (1 - (1 + 1)))", :expect => 0 },
   { :given => "(1 + (1 - (1 + 1)))", :expect => 0 },
-  { :given => "-1-1", :expect => -2 },
-  { :given => "-1-1-1", :expect => -3 },
-  { :given => "-1+(-1)", :expect => -2 },
-  { :given => "-1+-1", :expect => -2 },
-  { :given => "1+-1", :expect => 0 },
+  # { :given => "-1-1", :expect => -2 },
+  # { :given => "-1-1-1", :expect => -3 },
+  # { :given => "-1+(-1)", :expect => -2 },
+  # { :given => "-1+-1", :expect => -2 },
+  # { :given => "1+-1", :expect => 0 },
   # { :given => "-1--1", :expect => 0 }, TODO: fix this later
   # { :given => "1+1.1", :expect => 2.1 }, TODO: fix this
 ]
