@@ -66,24 +66,32 @@ end
 
 # acc, chr -> acc
 # acc is a pair of token list and num buffer
-def tokenize_step(*args) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/LineLength
-  if args.empty? # initialize memo
-    [[], '']
-  elsif args.length == 1 # finalize memo
-    token_list, num_buffer = args.first
-    token_list << parse_token(num_buffer) unless num_buffer.empty?
-    [token_list, '']
-  else # do step
-    (token_list, num_buffer), chr = args
-    if NUMERIC.include?(chr)
-      num_buffer += chr
-    else
-      token_list << parse_token(num_buffer) unless num_buffer.empty?
-      token_list << parse_token(chr)
-      num_buffer = ''
-    end
-    [token_list, num_buffer]
+def tokenize_step(*args)
+  if args.size <= 2
+    send("tokenize_step_#{args.size}", *args)
+  else
+    raise ArgumentError("wrong number of args (#{args.size}), takes 0, 1 or 2")
   end
+end
+
+def tokenize_step_0
+  [[], '']
+end
+
+def tokenize_step_1((token_list, num_buffer))
+  token_list << parse_token(num_buffer) unless num_buffer.empty?
+  [token_list, '']
+end
+
+def tokenize_step_2((token_list, num_buffer), chr)
+  if NUMERIC.include?(chr)
+    num_buffer += chr
+  else
+    token_list << parse_token(num_buffer) unless num_buffer.empty?
+    token_list << parse_token(chr)
+    num_buffer = ''
+  end
+  [token_list, num_buffer]
 end
 
 NUMERIC = (0..9).map(&:to_s) + ['.']
