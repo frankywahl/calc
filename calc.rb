@@ -2,6 +2,7 @@ require 'bigdecimal'
 
 # original implemenation
 
+# rubocop:disable all
 # str -> num
 def calculate(s)
   res, num, sign, stack = 0, 0, 1, [1]
@@ -23,6 +24,7 @@ def calculate(s)
   end
   res
 end
+# rubocop:enable all
 
 # helpers
 
@@ -35,7 +37,8 @@ end
 # tokenization concern
 
 def tokenize(str)
-  chrs_without_spaces = str
+  chrs_without_spaces =
+    str
     .chars
     .reject(&method(:space?))
 
@@ -44,18 +47,18 @@ def tokenize(str)
 end
 
 def space?(str)
-  " " == str
+  ' ' == str
 end
 
 # acc, chr -> acc
 # acc is a pair of token list and num buffer
-def tokenize_step(*args)
-  if args.length == 0 # initialize memo
-    [[], ""]
+def tokenize_step(*args) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity, Metrics/LineLength
+  if args.empty? # initialize memo
+    [[], '']
   elsif args.length == 1 # finalize memo
     token_list, num_buffer = args.first
     token_list << parse_token(num_buffer) unless num_buffer.empty?
-    [token_list, ""]
+    [token_list, '']
   else # do step
     (token_list, num_buffer), chr = args
     if NUMERIC.include?(chr)
@@ -63,14 +66,18 @@ def tokenize_step(*args)
     else
       token_list << parse_token(num_buffer) unless num_buffer.empty?
       token_list << parse_token(chr)
-      num_buffer = ""
+      num_buffer = ''
     end
     [token_list, num_buffer]
   end
 end
 
-NUMERIC = (0..9).map(&:to_s) + ["."]
-OPERATORS_AND_PARENS = ["+", "-", "(", ")"]
+# # lower "complexity"?
+# def tokenize_step_0()
+# end
+
+NUMERIC = (0..9).map(&:to_s) + ['.']
+OPERATORS_AND_PARENS = ['+', '-', '(', ')'].freeze
 
 # str -> token
 def parse_token(str)
@@ -81,9 +88,17 @@ def parse_token(str)
   end
 end
 
+# - calculation concern
+
+# TODO: use reducer!
+
+
+
 # - tests
 
-run_tests = ENV.has_key? 'run_tests'
+# rubocop:disable all
+
+run_tests = ENV.key? 'run_tests'
 run_tests and require 'minitest/autorun'
 
 # -- tests: tokenize
@@ -116,6 +131,23 @@ tokenize_examples = [
   { given: "1 + 1", expect: [1, :+, 1] },
   { given: "1 - 1", expect: [1, :-, 1] },
   { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
+]
+
+calculate_step_examples = [
+  # push, because input is an operand (and our stack doesn't have an operand and operator as last two elements)
+  { given: [[], 1], expect: [1]},
+  # push, because input is an operator
+  { given: [[1], :+], expect: [1, :+]},
+  # push, because input is an open paren
+  { given: [[1, :+], :"("], expect: [1, :+, :"("]},
+  # push, because input is an operand (and our stack doesn't have an operand and operator as last two elements)
+  { given: [[1, :+, :"("], 2], expect: [1, :+, :"(", 2]},
+  # push, because input is an operator
+  { given: [[1, :+, :"(", 2], :-], expect: [1, :+, :"(", 2, :-]},
+  # evaluate, because input is an operand and our stack has an operand and operator as last two elements
+  { given: [[1, :+, :"(", 2, :-], 3], expect: [1, :+, :"(", -1]},
+  # pop both operand and open paren, discard open paren and then recur with operand as input
+  { given: [[1, :+, :"(", -1], :")"], expect: [0]}
 ]
 
 run_tests && parse_token_examples.each do |eg|
@@ -178,6 +210,13 @@ run_tests && calculate_examples.each do |eg|
   end
 end
 
+run_tests && calculate_step_examples.each do |eg|
+  describe "#calculate_step" do
+    it eg.inspect do
+      assert_equal eg[:expect], calculate_step(eg[:given])
+    end
+  end
+end
 # entry point
 
 p tokenize(ARGV.first) if not run_tests and $PROGRAM_NAME == __FILE__
