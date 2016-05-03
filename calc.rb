@@ -46,6 +46,20 @@ def tokenize(str)
     .first
 end
 
+# same as above but returns an enumerator, *not* an array, tokenization is done
+# "a little bit at time" whenever the caller calls `next` on the enumerator
+def tokenize_lazy(char_enumerator)
+  Enumerator.new do |y|
+    num_buffer = ''
+    char_enumerator.each do |c|
+      tokens, num_buffer = tokenize_step([[], num_buffer], c)
+      tokens.each { |t| y.yield(t) }
+    end
+    tokens, = tokenize_step([[], num_buffer])
+    tokens.each { |t| y.yield(t) }
+  end
+end
+
 def space?(str)
   ' ' == str
 end
@@ -71,10 +85,6 @@ def tokenize_step(*args) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     [token_list, num_buffer]
   end
 end
-
-# # lower "complexity"?
-# def tokenize_step_0()
-# end
 
 NUMERIC = (0..9).map(&:to_s) + ['.']
 OPERATORS_AND_PARENS = ['+', '-', '(', ')'].freeze
