@@ -13,7 +13,6 @@ parse_token_examples = [
 ]
 
 tokenize_step_examples = [
-  # TODO: test for arity 1
   # todo: negative number tokens
   { given: nil, expect: [[], ''] },
   { given: [[[3], '1']], expect: [[3, 1], ''] },
