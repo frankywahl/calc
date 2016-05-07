@@ -13,9 +13,10 @@ parse_token_examples = [
 ]
 
 tokenize_step_examples = [
-  # todo: test for arity 0
   # todo: test for arity 1
   # todo: negative number tokens
+  { given: nil, expect: [[], ""] },
+  { given: [[[3], "1"]], expect: [[3, 1], ''] },
   {given: [[[], ""], "1"], expect: [[], "1"] },
   {given: [[[], "1"], "1"], expect: [[], "11"] },
   {given: [[[], "1"], "+"], expect: [[1, :+], ""] },
@@ -37,11 +38,13 @@ tokenize_step_examples = [
 tokenize_examples = [
   { given: "0", expect: [0] },
   { given: "1 + 1", expect: [1, :+, 1] },
-  # todo: negative number tokens
   { given: "1+-1", expect: [1, :+, -1] },
   { given: "1 - 1", expect: [1, :-, 1] },
   { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] },
   { given: "1 - -1", expect: [1, :-, -1] },
+  # todo: negative number tokens
+  #{ given: "- 1 - 1", expect: [-1, :-, 1] },
+  #{ given: "1 + (-1)", expect: [-1, :-, :'(', -1, :')'] },
 ]
 
 calculate_step_examples = [
@@ -104,13 +107,13 @@ calculate_examples = [
   { :given => "(1 + (2 + (3)))", :expect => 6 },
   { :given => "(1 + (1 - (1 + 1)))", :expect => 0 },
   { :given => "(1 + (1 - (1 + 1)))", :expect => 0 },
+  { :given => "1+-1", :expect => 0 },
+  { :given => "1+1.1", :expect => 2.1 }
   # { :given => "-1-1", :expect => -2 },
   # { :given => "-1-1-1", :expect => -3 },
   # { :given => "-1+(-1)", :expect => -2 },
   # { :given => "-1+-1", :expect => -2 },
-  # { :given => "1+-1", :expect => 0 },
   # { :given => "-1--1", :expect => 0 }, TODO: fix this later
-  # { :given => "1+1.1", :expect => 2.1 }, TODO: fix this
 ]
 
 calculate_examples.each do |eg|
