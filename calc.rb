@@ -1,5 +1,7 @@
 require 'bigdecimal'
 
+class BigDecimal; alias_method :inspect, :to_f; end
+
 # original implemenation
 
 # rubocop:disable all
@@ -85,7 +87,15 @@ end
 
 def tokenize_step_2((token_list, num_buffer), chr)
   if NUMERIC.include?(chr)
-    num_buffer += chr
+    if chr == '-'
+      token_list << parse_token(num_buffer) unless num_buffer.empty?
+      num_buffer = '-'
+      if token_list.last.is_a? BigDecimal
+        token_list << parse_token(num_buffer)
+        num_buffer = ''
+      end
+    end
+    num_buffer += chr unless chr == '-'
   else
     token_list << parse_token(num_buffer) unless num_buffer.empty?
     token_list << parse_token(chr)
@@ -94,7 +104,7 @@ def tokenize_step_2((token_list, num_buffer), chr)
   [token_list, num_buffer]
 end
 
-NUMERIC = (0..9).map(&:to_s) + ['.']
+NUMERIC = (0..9).map(&:to_s) + ['.', '-']
 OPERATORS_AND_PARENS = ['+', '-', '(', ')'].freeze
 
 # str -> token

@@ -1,6 +1,7 @@
 # rubocop:disable all
 require 'minitest/autorun'
 require_relative 'calc'
+require 'pry'
 
 # -- tests: tokenize
 
@@ -32,7 +33,7 @@ tokenize_examples = [
   { given: "0", expect: [0] },
   { given: "1 + 1", expect: [1, :+, 1] },
   # todo: negative number tokens
-  # { given: "1+-1", expect: [1, :+, -1] },
+  { given: "1+-1", expect: [1, :+, -1] },
   { given: "1 - 1", expect: [1, :-, 1] },
   { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
 ]
