@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'bigdecimal'
 class BigDecimal
-  alias_method :inspect, :to_f
+  alias inspect to_f
 end
 
 # original implemenation
@@ -129,8 +129,19 @@ end
 OPERATORS = [:+, :-].freeze
 
 def calculate_step(*args)
-  return [] if args.empty?
-  return args.first if args.length == 1
+  raise ArgumentError("wrong number of args (#{args.size}), takes 0, 1 or 2") unless (0..2).cover? args.count
+  send("calculate_step_#{args.count}", *args)
+end
+
+def calculate_step_0
+  []
+end
+
+def calculate_step_1(arg)
+  arg
+end
+
+def calculate_step_2(*args)
   stack, token = args
   if OPERATORS.include?(token) || token == :'('
     stack << token

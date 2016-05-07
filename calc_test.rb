@@ -47,6 +47,7 @@ tokenize_examples = [
 ]
 
 calculate_step_examples = [
+  { given: nil, expect: [] },
   # push, because input is an operand (and our stack doesn't have an operand and operator as last two elements)
   { given: [[], 1], expect: [1] },
   # push, because input is an operator
