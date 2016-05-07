@@ -90,9 +90,20 @@ def tokenize_step_2((token_list, num_buffer), chr)
   if NUMERIC.include?(chr)
     num_buffer += chr
   else
-    token_list << parse_token(num_buffer) unless num_buffer.empty?
-    token_list << parse_token(chr)
-    num_buffer = ''
+    if chr == '-'
+      if [:+, :-].include? token_list.last || token_list.empty?
+        num_buffer += chr
+      else
+        token_list << parse_token(num_buffer) unless num_buffer.empty?
+        token_list << parse_token(chr)
+        num_buffer = ''
+      end
+
+    else
+      token_list << parse_token(num_buffer) unless num_buffer.empty?
+      token_list << parse_token(chr)
+      num_buffer = ''
+    end
   end
   [token_list, num_buffer]
 end

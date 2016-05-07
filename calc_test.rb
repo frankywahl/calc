@@ -25,6 +25,11 @@ tokenize_step_examples = [
   {given: [[[], "1."], "5"], expect: [[],"1.5"] },
   {given: [[[3], "1."], "5"], expect: [[3],"1.5"] },
   {given: [[[3, :+], "1"], ")"], expect: [[3, :+, 1, :")"],""] }, # This will never happen, but ensure tokenize_step is independent of calculate
+  { given: [
+      [[3, :+], ""], '-'],
+    expect:
+      [[3, :+], "-"]
+  },
 ]
 
 # separate parsing from calculations
@@ -33,9 +38,10 @@ tokenize_examples = [
   { given: "0", expect: [0] },
   { given: "1 + 1", expect: [1, :+, 1] },
   # todo: negative number tokens
-  # { given: "1+-1", expect: [1, :+, -1] },
+  { given: "1+-1", expect: [1, :+, -1] },
   { given: "1 - 1", expect: [1, :-, 1] },
-  { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
+  { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] },
+  { given: "1 - -1", expect: [1, :-, -1] },
 ]
 
 calculate_step_examples = [
