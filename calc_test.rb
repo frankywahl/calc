@@ -2,6 +2,8 @@
 # -- tests: tokenize
 require_relative 'calc'
 require 'minitest/autorun'
+require 'pry'
+require 'pry-byebug'
 
 parse_token_examples = [
   { given: "1", expect: 1 },
