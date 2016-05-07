@@ -129,26 +129,22 @@ end
 OPERATORS = [:+, :-].freeze
 
 def calculate_step(*args)
-  if args.empty?
-    []
-  elsif args.length == 1
-    return args.first
+  return [] if args.empty?
+  return args.first if args.length == 1
+  stack, token = args
+  if OPERATORS.include?(token) || token == :'('
+    stack << token
+  elsif token == :')'
+    result = stack.pop
+    stack.pop
+    calculate_step(stack, result)
   else
-    stack, token = args
-    if OPERATORS.include?(token) || token == :'('
-      stack << token
-    elsif token == :')'
-      result = stack.pop
-      stack.pop
-      calculate_step(stack, result)
+    top = stack.last
+    if OPERATORS.include?(top)
+      operator = stack.pop
+      stack << stack.pop.send(operator, token)
     else
-      top = stack.last
-      if OPERATORS.include?(top)
-        operator = stack.pop
-        stack << stack.pop.send(operator, token)
-      else
-        stack << token
-      end
+      stack << token
     end
   end
 end
