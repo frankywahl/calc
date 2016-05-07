@@ -1,4 +1,7 @@
 require 'bigdecimal'
+class BigDecimal
+  alias_method :inspect, :to_f
+end
 
 # original implemenation
 
