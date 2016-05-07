@@ -30,12 +30,12 @@ tokenize_step_examples = [
 # separate parsing from calculations
 
 tokenize_examples = [
-  { given: "0", expect: [0] },
-  { given: "1 + 1", expect: [1, :+, 1] },
-  # todo: negative number tokens
-  { given: "1+-1", expect: [1, :+, -1] },
+  #{ given: "0", expect: [0] },
+  #{ given: "1 + 1", expect: [1, :+, 1] },
+  # # todo: negative number tokens
+  #{ given: "1+-1", expect: [1, :+, -1] },
   { given: "1 - 1", expect: [1, :-, 1] },
-  { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
+  # { given: "1 + (1 + 1)", expect: [1, :+, :'(', 1, :+, 1, :')'] }
 ]
 
 calculate_step_examples = [

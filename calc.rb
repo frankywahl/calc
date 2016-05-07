@@ -86,16 +86,19 @@ def tokenize_step_1((token_list, num_buffer))
 end
 
 def tokenize_step_2((token_list, num_buffer), chr)
-  if NUMERIC.include?(chr)
-    if chr == '-'
+  if NUMERIC.include?(chr) || chr == '-'
+    if chr != '-'
+      num_buffer += chr
+    else
       token_list << parse_token(num_buffer) unless num_buffer.empty?
-      num_buffer = '-'
-      if token_list.last.is_a? BigDecimal
-        token_list << parse_token(num_buffer)
+      binding.pry
+      if (OPERATORS_AND_PARENS.include? token_list.last) || !(NUMERIC.include? token_list.last)
+        token_list << parse_token(chr) if [:+, :'(', :')'].include? token_list.last
         num_buffer = ''
+      else
+        num_buffer += chr
       end
     end
-    num_buffer += chr unless chr == '-'
   else
     token_list << parse_token(num_buffer) unless num_buffer.empty?
     token_list << parse_token(chr)
@@ -104,7 +107,7 @@ def tokenize_step_2((token_list, num_buffer), chr)
   [token_list, num_buffer]
 end
 
-NUMERIC = (0..9).map(&:to_s) + ['.', '-']
+NUMERIC = (0..9).map(&:to_s) + ['.']
 OPERATORS_AND_PARENS = ['+', '-', '(', ')'].freeze
 
 # str -> token
