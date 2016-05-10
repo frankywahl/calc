@@ -32,7 +32,8 @@
 (def tokenize-step-examples
  [
   {:given [] :expect [[], ""]}
-  {:given [[], "1"] :expect [[1M] ""]}
+  {:given [[[], "1"]] :expect [[1M] ""],}
+  {:given [[[], ""]], :expect [[], ""],}
   {:given [[[], ""], "1"], :expect [[], "1"] },
   {:given [[[], "1"], "1"], :expect [[], "11"] },
   {:given [[[], "1"], "+"], :expect [[1M, :+], ""] },
@@ -51,7 +52,11 @@
    (empty? buffer) [(conj token-list (parse-token c)) ""]
    :else
    [(conj token-list (parse-token buffer) (parse-token c)) ""]))
- ([[token-list buffer]]))
+ ([[token-list buffer]]
+  (if (empty? buffer)
+   [token-list ""]
+   [(conj token-list (parse-token buffer)) ""])))
+
 
 (deftest tokenize-step-test
  (doseq [example tokenize-step-examples]
