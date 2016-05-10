@@ -74,14 +74,15 @@
    (filter #(not= \space %1) val)
    (map str val)))
 
-
 (defn tokenize
+ "returns a seq of tokens from a given string"
  [s]
-
- (let [initial-memo (tokenize-step)]
-  (let [last-memo (reduce tokenize-step initial-memo (chars-without-spaces s))]
-   (first (tokenize-step last-memo)))))
-
+ (let
+  [initial (tokenize-step)
+   chrs (chars-without-spaces s)
+   penultimate (red uce tokenize-step initial-memo chrs)
+   final (tokenize-step last-memo)]
+  (first final)))
 
 (deftest tokenize-test
  (doseq [example tokenize-examples]
