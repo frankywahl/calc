@@ -69,10 +69,10 @@
 (defn chars-without-spaces
  [s]
  (as->
-   s val
-   (seq val)
-   (filter #(not= \space %1) val)
-   (map str val)))
+   s val ; assign s to val
+   (seq val) ; val is now a seq of chars
+   (filter #(not= \space %1) val) ; val has no spaces
+   (map str val))) ; val is now a seq of 1 char strings
 
 (defn tokenize
  "returns a seq of tokens from a given string"
@@ -87,19 +87,6 @@
 (deftest tokenize-test
  (doseq [example tokenize-examples]
   (is (= (:expect example) (tokenize (:given example))))))
-
-
-; def tokenize(str)
-;    chrs_without_spaces =
-;      str
-;      .chars
-;      .reject(&method(:space?))
-;
-;    reduce(chrs_without_spaces, method(:tokenize_step))
-;      .first
-;  end
-
-
 
 (deftest tokenize-step-test
  (doseq [example tokenize-step-examples]
