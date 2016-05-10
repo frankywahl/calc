@@ -6,10 +6,7 @@
 ; use: copy into the current namespace (mutates the current namespace)
 
 (def numeric
- (conj
-  (map  str
-   (range 0 10)) "."))
-
+ (set (conj (map str (range 0 10)) ".")))
 
 (def operators #{"+" "-"})
 (def parens {"(" :open, ")" :closed})
@@ -28,8 +25,36 @@
   (contains? parens s) (get parens s)
   :else (bigdec s)))
 
-(deftest my-test
+(deftest parse-token-test
  (doseq [example parse-token-examples]
   (is (= (:expect example) (parse-token (:given example))))))
+
+(def tokenize-step-examples
+ [
+  {:given [] :expect [[], ""]}
+  {:given [[], "1"] :expect [[1M] ""]}
+  {:given [[[], ""], "1"], :expect [[], "1"] },
+  {:given [[[], "1"], "1"], :expect [[], "11"] },
+  {:given [[[], "1"], "+"], :expect [[1M, :+], ""] },
+  {:given [[[], "1"], "-"], :expect [[1M, :-], ""] },
+  {:given [[[], "1"], "."], :expect [[], "1."] },
+  {:given [[[], "1"], "."], :expect [[], "1."] },
+  {:given [[[], "1."], "5"], :expect [[],"1.5"] },
+  {:given [[[3], "1."], "5"], :expect [[3],"1.5"] },])
+
+(defn tokenize-step
+ ([]
+  [[], ""])
+ ([[token-list buffer] c]
+  (cond
+   (contains? numeric c) [token-list (str buffer c)]
+   (empty? buffer) [(conj token-list (parse-token c)) ""]
+   :else
+   [(conj token-list (parse-token buffer) (parse-token c)) ""]))
+ ([[token-list buffer]]))
+
+(deftest tokenize-step-test
+ (doseq [example tokenize-step-examples]
+  (is (= (:expect example) (apply tokenize-step (:given example))))))
 
 (run-tests 'user)
